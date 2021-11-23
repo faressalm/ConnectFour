@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="662.0" style="-fx-background-color: #0000;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FrontEnd.Controller">
+   <children>
+      <AnchorPane fx:id="gamePane" layoutY="19.0" prefHeight="502.0" prefWidth="662.0" style="-fx-background-color: #313131; -fx-background-radius: 4;">
+         <children>
+            <Label layoutX="217.0" layoutY="166.0" onMouseClicked="#triggerScreens" prefHeight="170.0" prefWidth="228.0" text="Game" textAlignment="CENTER" textFill="#fdf3f3">
+               <font>
+                  <Font size="45.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="homePane" layoutY="18.0" prefHeight="502.0" prefWidth="662.0" style="-fx-background-color: #313131; -fx-background-radius: 4;">
+         <children>
+            <Label layoutX="257.0" layoutY="210.0" onMouseClicked="#triggerScreens" text="Home" textFill="#e4d8d8">
+               <font>
+                  <Font size="55.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="38.0" prefWidth="662.0" style="-fx-background-color: #FFAE78; -fx-background-radius: 9;">
+         <effect>
+            <InnerShadow>
+               <color>
+                  <Color red="1.0" green="0.6823529601097107" blue="0.47058823704719543" />
+               </color>
+            </InnerShadow>
+         </effect>
+         <children>
+            <ImageView fx:id="closeWindow" fitHeight="25.0" fitWidth="20.0" layoutX="630.0" layoutY="11.0" onMouseClicked="#closeWindowAction" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/close.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
