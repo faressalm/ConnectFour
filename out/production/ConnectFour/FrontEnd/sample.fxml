@@ -12,11 +12,7 @@
    <children>
       <AnchorPane fx:id="gamePane" layoutY="19.0" prefHeight="502.0" prefWidth="662.0" style="-fx-background-color: #313131; -fx-background-radius: 4;">
          <children>
-            <Label layoutX="217.0" layoutY="166.0" onMouseClicked="#triggerScreens" prefHeight="170.0" prefWidth="228.0" text="Game" textAlignment="CENTER" textFill="#fdf3f3">
-               <font>
-                  <Font size="45.0" />
-               </font>
-            </Label>
+            <AnchorPane fx:id="gameBox" layoutX="91.0" layoutY="54.0" prefHeight="420.0" prefWidth="480.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="homePane" layoutY="18.0" prefHeight="502.0" prefWidth="662.0" style="-fx-background-color: #313131; -fx-background-radius: 4;">
@@ -40,6 +36,11 @@
             <ImageView fx:id="closeWindow" fitHeight="25.0" fitWidth="20.0" layoutX="630.0" layoutY="11.0" onMouseClicked="#closeWindowAction" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@assets/close.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="backButton" fitHeight="25.0" fitWidth="20.0" layoutX="14.0" layoutY="11.0" onMouseClicked="#triggerScreens" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@assets/back.png" />
                </image>
             </ImageView>
          </children>
