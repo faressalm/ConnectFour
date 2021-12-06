@@ -1,4 +1,6 @@
 package FrontEnd;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +11,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -21,6 +28,8 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.layout.AnchorPane;
+
+import javax.sound.sampled.*;
 
 public class Controller implements Initializable {
 
@@ -34,9 +43,15 @@ public class Controller implements Initializable {
     private ImageView closeWindow;
     @FXML
     private AnchorPane gameBox;
+    @FXML
+    private ImageView backButton;
+    @FXML
+    private Label playerScore;
+    @FXML
+    private Label agentScore;
     boolean isHome =true;
 
-    private static final int DIAMETER = 60;
+    private static final int DIAMETER = 56;
     private static final int COLUMNS = 7;
     private static final int ROWS = 6;
 
@@ -44,11 +59,24 @@ public class Controller implements Initializable {
     private Disc[][] grid = new Disc[COLUMNS][ROWS];
 
     private Pane discRoot = new Pane();
+
+    //algorithm
+    private boolean isPruning;
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        backButton.setVisible(false);
         restart();
     }
-
+    private void restart(){
+        redMove=true;
+        grid = new Disc[COLUMNS][ROWS];
+        gameBox.getChildren().remove(discRoot);
+        // initialize the grid
+        discRoot= new Pane();
+        gameBox.getChildren().add(discRoot);
+        gameBox.getChildren().add(makeGrid());
+        gameBox.getChildren().addAll(makeColumns());
+    }
     private Shape makeGrid() {
        Rectangle rectangle= new Rectangle((COLUMNS + 1) * DIAMETER, (ROWS + 1) * DIAMETER);
         rectangle.setArcWidth(30.0);
@@ -147,6 +175,7 @@ public class Controller implements Initializable {
 //            }
             }
         });
+        playAudio();
         animation.play();
     }
     
@@ -161,22 +190,54 @@ public class Controller implements Initializable {
             restart();
             homePane.setVisible(false);
             gamePane.setVisible(true);
+            backButton.setVisible(true);
         }else{
             homePane.setVisible(true);
             gamePane.setVisible(false);
+            backButton.setVisible(false);
         }
         isHome=!isHome;
 
     }
+    @FXML
+    void selectAlgorithm(MouseEvent event) {
+        String buttonType = ((Node) event.getSource()).getId();
+        if (buttonType.compareTo("minimax") == 0)
+        {
 
-    private void restart(){
-        redMove=true;
-        grid = new Disc[COLUMNS][ROWS];
-        gameBox.getChildren().remove(discRoot);
-        // initialize the grid
-        discRoot= new Pane();
-        gameBox.getChildren().add(discRoot);
-        gameBox.getChildren().add(makeGrid());
-        gameBox.getChildren().addAll(makeColumns());
+        }
+        else {
+
+        }
+        triggerScreens(event);
     }
+    @FXML
+    void changeButtonColor(MouseEvent event) {
+        Node button = ((Node) event.getSource());
+        button.setStyle("-fx-background-color: #FFAE78; -fx-background-radius: 20");
+    }
+
+    @FXML
+    void reChangeButtonColor(MouseEvent event) {
+        Node button = ((Node) event.getSource());
+        button.setStyle("-fx-background-color:  #2d8da8; -fx-background-radius: 20");
+    }
+
+    void playAudio(){
+        File file = new File("click.wav");
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
