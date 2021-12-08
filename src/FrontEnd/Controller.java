@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import BackEnd.Algorithms;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -66,6 +67,7 @@ public class Controller implements Initializable {
 
     //algorithm
     private boolean isPruning;
+    private Algorithms algorithms = new Algorithms(7, true);
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -82,6 +84,8 @@ public class Controller implements Initializable {
         gameBox.getChildren().add(discRoot);
         gameBox.getChildren().add(makeGrid());
         gameBox.getChildren().addAll(makeColumns());
+        agentScore.setText("0");
+        playerScore.setText("0");
     }
 
     private Shape makeGrid() {
@@ -154,7 +158,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private void placeDisc(Disc disc, int column) {
+    private void placeDisc(Disc disc, final int column) {
         int row = ROWS - 1;
         //check if column has no option
         if (grid[column][row] != null)
@@ -170,23 +174,30 @@ public class Controller implements Initializable {
         grid[column][row + 1] = disc;
         discRoot.getChildren().add(disc);
         disc.setTranslateX(column * (DIAMETER + 5) + DIAMETER / 4);
-        // change player turn
-        redMove = !redMove;
-
-        final int currentRow = row;
-
-        TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), disc);
+        double durationTime = 0.5;
+        durationTime = redMove ? 0.5 : 0.7;
+        TranslateTransition animation = new TranslateTransition(Duration.seconds(durationTime), disc);
         animation.setToY((ROWS - row - 2) * (DIAMETER + 5) + DIAMETER / 4);
         animation.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-//            if (gameEnded(column, currentRow)) {
-//                gameOver();
-//            }
+                // change user scores
+                agentScore.setText(Integer.toString(algorithms.agentScore));
+                playerScore.setText(Integer.toString(algorithms.humanScore));
             }
         });
-        playAudio();
+
         animation.play();
+        // change player turn
+        redMove = !redMove;
+        if (!redMove) {
+            playAudio();
+            algorithms.updateHuman(column);
+            int col = algorithms.minimax();
+            algorithms.updateAgent(col);
+            placeDisc(new Disc(redMove), col);
+        }
+
     }
 
     @FXML
@@ -216,10 +227,11 @@ public class Controller implements Initializable {
         String buttonType = ((Node) event.getSource()).getId();
         String textState = maxDepth.getText();
         if (inputTextIsValid(textState)) {
+            int maxDepthValue = Integer.parseInt(maxDepth.getText());
             if (buttonType.compareTo("minimax") == 0) {
-
+                algorithms = new Algorithms(maxDepthValue, false);
             } else {
-
+                algorithms = new Algorithms(maxDepthValue, true);
             }
             triggerScreens(event);
         }
