@@ -1,4 +1,7 @@
 package FrontEnd;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +12,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -21,6 +30,8 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.layout.AnchorPane;
+
+import javax.sound.sampled.*;
 
 public class Controller implements Initializable {
 
@@ -34,9 +45,17 @@ public class Controller implements Initializable {
     private ImageView closeWindow;
     @FXML
     private AnchorPane gameBox;
-    boolean isHome =true;
+    @FXML
+    private ImageView backButton;
+    @FXML
+    private Label playerScore;
+    @FXML
+    private Label agentScore;
+    @FXML
+    private TextField maxDepth;
+    boolean isHome = true;
 
-    private static final int DIAMETER = 60;
+    private static final int DIAMETER = 56;
     private static final int COLUMNS = 7;
     private static final int ROWS = 6;
 
@@ -44,13 +63,29 @@ public class Controller implements Initializable {
     private Disc[][] grid = new Disc[COLUMNS][ROWS];
 
     private Pane discRoot = new Pane();
+
+    //algorithm
+    private boolean isPruning;
+
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        backButton.setVisible(false);
         restart();
     }
 
+    private void restart() {
+        redMove = true;
+        grid = new Disc[COLUMNS][ROWS];
+        gameBox.getChildren().remove(discRoot);
+        // initialize the grid
+        discRoot = new Pane();
+        gameBox.getChildren().add(discRoot);
+        gameBox.getChildren().add(makeGrid());
+        gameBox.getChildren().addAll(makeColumns());
+    }
+
     private Shape makeGrid() {
-       Rectangle rectangle= new Rectangle((COLUMNS + 1) * DIAMETER, (ROWS + 1) * DIAMETER);
+        Rectangle rectangle = new Rectangle((COLUMNS + 1) * DIAMETER, (ROWS + 1) * DIAMETER);
         rectangle.setArcWidth(30.0);
         rectangle.setArcHeight(30.0);
         Shape shape = rectangle;
@@ -77,6 +112,7 @@ public class Controller implements Initializable {
         shape.setEffect(lighting);
         return shape;
     }
+
     private List<Rectangle> makeColumns() {
         List<Rectangle> list = new ArrayList<Rectangle>();
 
@@ -109,6 +145,7 @@ public class Controller implements Initializable {
 
         return list;
     }
+
     private static class Disc extends Circle {
         public Disc(boolean isPlayerOne) {
             super(DIAMETER / 2, isPlayerOne ? Color.rgb(181, 50, 50, 1) : Color.rgb(33, 184, 176, 1.0));
@@ -116,20 +153,21 @@ public class Controller implements Initializable {
             setCenterY(DIAMETER / 2);
         }
     }
+
     private void placeDisc(Disc disc, int column) {
         int row = ROWS - 1;
         //check if column has no option
-        if(grid[column][row]!=null)
+        if (grid[column][row] != null)
             return;
         //get the available row
         do {
-            if (grid[column][row]!=null)
+            if (grid[column][row] != null)
                 break;
 
             row--;
         } while (row >= 0);
 
-        grid[column][row+1] = disc;
+        grid[column][row + 1] = disc;
         discRoot.getChildren().add(disc);
         disc.setTranslateX(column * (DIAMETER + 5) + DIAMETER / 4);
         // change player turn
@@ -138,7 +176,7 @@ public class Controller implements Initializable {
         final int currentRow = row;
 
         TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), disc);
-        animation.setToY((ROWS-row-2) * (DIAMETER + 5) + DIAMETER / 4);
+        animation.setToY((ROWS - row - 2) * (DIAMETER + 5) + DIAMETER / 4);
         animation.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -147,36 +185,85 @@ public class Controller implements Initializable {
 //            }
             }
         });
+        playAudio();
         animation.play();
     }
-    
+
     @FXML
     void closeWindowAction(MouseEvent event) {
         Stage stage = (Stage) closeWindow.getScene().getWindow();
         stage.close();
     }
+
     @FXML
     void triggerScreens(MouseEvent event) {
-        if(isHome){
+        if (isHome) {
             restart();
             homePane.setVisible(false);
             gamePane.setVisible(true);
-        }else{
+            backButton.setVisible(true);
+        } else {
             homePane.setVisible(true);
             gamePane.setVisible(false);
+            backButton.setVisible(false);
         }
-        isHome=!isHome;
+        isHome = !isHome;
 
     }
 
-    private void restart(){
-        redMove=true;
-        grid = new Disc[COLUMNS][ROWS];
-        gameBox.getChildren().remove(discRoot);
-        // initialize the grid
-        discRoot= new Pane();
-        gameBox.getChildren().add(discRoot);
-        gameBox.getChildren().add(makeGrid());
-        gameBox.getChildren().addAll(makeColumns());
+    @FXML
+    void selectAlgorithm(MouseEvent event) {
+        String buttonType = ((Node) event.getSource()).getId();
+        String textState = maxDepth.getText();
+        if (inputTextIsValid(textState)) {
+            if (buttonType.compareTo("minimax") == 0) {
+
+            } else {
+
+            }
+            triggerScreens(event);
+        }
+
+    }
+
+    @FXML
+    void changeButtonColor(MouseEvent event) {
+        Node button = ((Node) event.getSource());
+        button.setStyle("-fx-background-color: #FFAE78; -fx-background-radius: 20");
+    }
+
+    @FXML
+    void reChangeButtonColor(MouseEvent event) {
+        Node button = ((Node) event.getSource());
+        button.setStyle("-fx-background-color:  #2d8da8; -fx-background-radius: 20");
+    }
+
+    void playAudio() {
+        File file = new File("click.wav");
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean inputTextIsValid(String textState) {
+        return textState != null && textState.length() <= 2 && textState.length() >= 1 && isNumeric(textState) && Integer.parseInt(textState) > 0;
+    }
+
+    private boolean isNumeric(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
