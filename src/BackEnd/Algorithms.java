@@ -36,7 +36,7 @@ public class Algorithms {
         return 6 - col ;
     }
     ArrayList<Integer> getNext(Long board){
-        ArrayList<Integer> cols = new ArrayList<>();
+        ArrayList<Integer> cols = new ArrayList<Integer>();
         for(int i = 0 ; i < 7 ; i++){
             if(manipulation.isValid(i,board)) {
                 cols.add(i) ;

@@ -67,7 +67,7 @@ public class Controller implements Initializable {
 
     //algorithm
     private boolean isPruning;
-    private Algorithms algorithms = new Algorithms(7, true);
+    private Algorithms algorithms = new Algorithms(2, true);
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -247,6 +247,11 @@ public class Controller implements Initializable {
     void reChangeButtonColor(MouseEvent event) {
         Node button = ((Node) event.getSource());
         button.setStyle("-fx-background-color:  #2d8da8; -fx-background-radius: 20");
+    }
+
+    @FXML
+    void buildTree(MouseEvent event) {
+    algorithms.DisplayTree();
     }
 
     void playAudio() {
