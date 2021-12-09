@@ -155,28 +155,29 @@ public class Algorithms {
         return 69 - manipulation.getScore(player);
     }
 
-    private int getHeuristic(Long human, Long agent) {
-        int agentFeatures = 0, humanFeatures = 0;
-        int value = 10;
-        int[] humanCnt, agentCnt;
-        humanCnt = count(human);
-        agentCnt = count(agent);
-        for (int piles = 2; piles < 8; piles++) {
-            humanFeatures += value * humanCnt[piles];
-            agentFeatures += value * agentCnt[piles];
-            value *= 10;
+    private  int getHeuristic(Long human , Long agent ){
+        int  agentFeatures = 0 ,  humanFeatures = 0 ;
+        int value = 10 ;
+        int[] humanCnt , agentCnt ;
+        humanCnt = count(human) ;
+        agentCnt = count(agent) ;
+        for(int piles = 2 ; piles < 8 ; piles++ ){
+            humanFeatures += value * humanCnt[piles] ;
+            agentFeatures += value * agentCnt[piles] ;
+            value *= 10 ;
         }
-        value = 10;
-        humanCnt = countDef(human, agent);
-        agentCnt = countDef(agent, human);
-        for (int piles = 2; piles < 7; piles++) {
-            humanFeatures += value * humanCnt[piles];
-            agentFeatures += value * agentCnt[piles];
-            value *= 10;
+        value = 10 ;
+        humanCnt = countDef(human , agent  ) ;
+        agentCnt = countDef(agent , human  ) ;
+        for(int piles = 2 ; piles < 7 ; piles++ ){
+            humanFeatures += value * humanCnt[piles] ;
+            agentFeatures += value * agentCnt[piles] ;
+            if(piles == 2)
+                value  = 1000 ;
         }
-        agentFeatures += destroy(agent) * 1000;
-        humanFeatures += destroy(human) * 1000;
-        return agentFeatures - humanFeatures;
+        agentFeatures += destroy(agent) * 1000 ;
+        humanFeatures += destroy(human) * 1000 ;
+        return agentFeatures - humanFeatures ;
     }
 
     private int[] minimax(Long human, Long agent, int depth, boolean maximizingPlayer) {
