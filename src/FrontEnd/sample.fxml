@@ -21,7 +21,18 @@
    <children>
       <AnchorPane id="home" fx:id="gamePane" layoutY="19.0" prefHeight="502.0" prefWidth="662.0" style="-fx-background-color: #313131; -fx-background-radius: 4;">
          <children>
-            <AnchorPane fx:id="gameBox" layoutX="107.0" layoutY="96.0" prefHeight="392.0" prefWidth="448.0" />
+            <AnchorPane fx:id="gameBox" layoutX="107.0" layoutY="96.0" prefHeight="392.0" prefWidth="448.0">
+               <children>
+                  <AnchorPane fx:id="gameOverPane" layoutX="87.0" layoutY="72.0" prefHeight="247.0" prefWidth="274.0" visible="false">
+                     <children>
+                        <ImageView fitHeight="216.0" fitWidth="257.0" layoutX="29.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@assets/gameOver.gif" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+               </children></AnchorPane>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c0c0c0" height="26.0" layoutX="151.0" layoutY="39.0" stroke="TRANSPARENT" strokeType="INSIDE" width="359.0">
                <effect>
                   <Glow level="0.36" />

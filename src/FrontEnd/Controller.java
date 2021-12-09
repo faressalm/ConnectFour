@@ -54,6 +54,10 @@ public class Controller implements Initializable {
     private Label agentScore;
     @FXML
     private TextField maxDepth;
+
+    @FXML
+    private AnchorPane gameOverPane;
+
     boolean isHome = true;
 
     private static final int DIAMETER = 56;
@@ -184,6 +188,7 @@ public class Controller implements Initializable {
                 // change user scores
                 agentScore.setText(Integer.toString(algorithms.agentScore));
                 playerScore.setText(Integer.toString(algorithms.humanScore));
+
             }
         });
 
@@ -191,11 +196,19 @@ public class Controller implements Initializable {
         // change player turn
         redMove = !redMove;
         if (!redMove) {
-            playAudio();
+            playAudio("click.wav");
             algorithms.updateHuman(column);
             int col = algorithms.minimax();
             placeDisc(new Disc(redMove), col);
+            if(algorithms.gameOver()){
+                gameOverPane.setVisible(true);
+                gameBox.getChildren().remove(gameOverPane);
+                gameBox.getChildren().add(gameOverPane);
+                playAudio("gameOversound.wav");
+                System.out.println("Game over");
+            }
         }
+
 
     }
 
@@ -216,6 +229,7 @@ public class Controller implements Initializable {
             homePane.setVisible(true);
             gamePane.setVisible(false);
             backButton.setVisible(false);
+            gameOverPane.setVisible(false);
         }
         isHome = !isHome;
 
@@ -254,8 +268,8 @@ public class Controller implements Initializable {
     algorithms.DisplayTree();
     }
 
-    void playAudio() {
-        File file = new File("click.wav");
+    void playAudio(String path) {
+        File file = new File(path);
         try {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
             Clip clip = AudioSystem.getClip();
