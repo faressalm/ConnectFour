@@ -194,7 +194,6 @@ public class Controller implements Initializable {
             playAudio();
             algorithms.updateHuman(column);
             int col = algorithms.minimax();
-            algorithms.updateAgent(col);
             placeDisc(new Disc(redMove), col);
         }
 
